@@ -2,10 +2,3 @@ streamlit
 pandas
 psycopg2-binary
 numpy
-opencv-python-headless
-ultralytics
-supervision
-yt-dlp
-easyocr
-torch
-torchvision
