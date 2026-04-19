@@ -79,10 +79,16 @@ if not df.empty:
             cols = st.columns(3)
             for i, (_, row) in enumerate(violators.iterrows()):
                 with cols[i % 3]:
-                    if row['image_path'] and os.path.exists(row['image_path']):
-                        st.image(row['image_path'], caption=f"ID: {row['track_id']} | Plate: {row['license_plate']} | {row['violations']}")
+                    img_path = row['image_path']
+                    if img_path:
+                        if img_path.startswith("http"):
+                            st.image(img_path, caption=f"ID: {row['track_id']} | Plate: {row['license_plate']} | {row['violations']}")
+                        elif os.path.exists(img_path):
+                            st.image(img_path, caption=f"ID: {row['track_id']} | Plate: {row['license_plate']} | {row['violations']}")
+                        else:
+                            st.info(f"ID: {row['track_id']} - Image sync in progress...")
                     else:
-                        st.info(f"ID: {row['track_id']} - Image pending upload from detector.")
+                        st.info(f"ID: {row['track_id']} - Capturing evidence...")
         else:
             st.info("No violation images captured yet.")
 else:
