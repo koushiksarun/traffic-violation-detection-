@@ -4,7 +4,8 @@ import psycopg2
 import os
 
 # Database Connection
-DATABASE_URL = "postgresql://postgres.uralhonzyplrhtfysiab:[PlIKKuiPMmTTNGgA]@aws-1-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+# Cleaned URL (Removed pgbouncer=true which is incompatible with some psycopg2 versions)
+DATABASE_URL = "postgresql://postgres.uralhonzyplrhtfysiab:[PlIKKuiPMmTTNGgA]@aws-1-us-east-1.pooler.supabase.com:6543/postgres"
 
 @st.cache_data(ttl=5) # Cache data for 5 seconds
 def get_data():
