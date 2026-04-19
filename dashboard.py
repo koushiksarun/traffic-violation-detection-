@@ -11,12 +11,30 @@ DATABASE_URL = "postgresql://postgres.uralhonzyplrhtfysiab:PlIKKuiPMmTTNGgA@aws-
 def get_data():
     try:
         conn = psycopg2.connect(DATABASE_URL)
+        cursor = conn.cursor()
+        # Ensure table exists
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS vehicles (
+                id SERIAL PRIMARY KEY,
+                track_id INTEGER UNIQUE,
+                vehicle_type TEXT,
+                license_plate TEXT,
+                first_seen TIMESTAMP,
+                last_seen TIMESTAMP,
+                violations TEXT,
+                max_speed REAL,
+                image_path TEXT,
+                lane_id TEXT
+            )
+        ''')
+        conn.commit()
+        
         query = "SELECT * FROM vehicles ORDER BY last_seen DESC"
         df = pd.read_sql(query, conn)
         conn.close()
         return df
     except Exception as e:
-        st.error(f"Database Connection Error: {e}")
+        st.error(f"Database Error: {e}")
         return pd.DataFrame()
 
 st.set_page_config(page_title="Traffic Monitor Dashboard", layout="wide", page_icon="🚦")
