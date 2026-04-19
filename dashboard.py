@@ -4,8 +4,8 @@ import psycopg2
 import os
 
 # Database Connection
-# Cleaned URL (URL-encoded special characters in password)
-DATABASE_URL = "postgresql://postgres.uralhonzyplrhtfysiab:%5BPlIKKuiPMmTTNGgA%5D@aws-1-us-east-1.pooler.supabase.com:6543/postgres"
+# Cleaned URL (Fixed password - removed accidental brackets)
+DATABASE_URL = "postgresql://postgres.uralhonzyplrhtfysiab:PlIKKuiPMmTTNGgA@aws-1-us-east-1.pooler.supabase.com:6543/postgres"
 
 @st.cache_data(ttl=5) # Cache data for 5 seconds
 def get_data():

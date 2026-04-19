@@ -12,7 +12,7 @@ import os
 # --- Configuration & ROIs ---
 YOUTUBE_URL = "https://www.youtube.com/watch?v=wqctLW0Hb_0"
 MODEL_PATH = "yolov8n.pt"
-DATABASE_URL = "postgresql://postgres.uralhonzyplrhtfysiab:%5BPlIKKuiPMmTTNGgA%5D@aws-1-us-east-1.pooler.supabase.com:6543/postgres"
+DATABASE_URL = "postgresql://postgres.uralhonzyplrhtfysiab:PlIKKuiPMmTTNGgA@aws-1-us-east-1.pooler.supabase.com:6543/postgres"
 
 # 1. Perspective Correction Points (Source -> Destination)
 # These should be 4 points forming a rectangle in the real world (e.g., a patch of road)
