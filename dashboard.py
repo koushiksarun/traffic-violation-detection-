@@ -1,8 +1,18 @@
+import os
+from datetime import datetime
+
+RUNTIME_DIR = os.path.join(os.getcwd(), ".runtime")
+STREAMLIT_HOME = os.path.join(RUNTIME_DIR, "home")
+STREAMLIT_CONFIG = os.path.join(STREAMLIT_HOME, ".streamlit")
+os.makedirs(STREAMLIT_CONFIG, exist_ok=True)
+
+os.environ.setdefault("HOME", STREAMLIT_HOME)
+os.environ.setdefault("USERPROFILE", STREAMLIT_HOME)
+os.environ.setdefault("STREAMLIT_BROWSER_GATHER_USAGE_STATS", "false")
+
 import streamlit as st
 import pandas as pd
 import psycopg2
-import os
-from datetime import datetime
 
 # --- Configuration ---
 DATABASE_URL = "postgresql://postgres.uralhonzyplrhtfysiab:PlIKKuiPMmTTNGgA@aws-1-us-east-1.pooler.supabase.com:6543/postgres"
@@ -94,7 +104,10 @@ st.markdown("""
 def fetch_live_data():
     try:
         conn = psycopg2.connect(DATABASE_URL, connect_timeout=5)
-        df = pd.read_sql("SELECT * FROM vehicles ORDER BY last_seen DESC", conn)
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM vehicles ORDER BY last_seen DESC")
+        columns = [desc[0] for desc in cursor.description]
+        df = pd.DataFrame(cursor.fetchall(), columns=columns)
         conn.close()
         return df, "Connected"
     except Exception as e:
@@ -193,7 +206,7 @@ with tab_ledger:
     st.markdown('<div class="glow-card">', unsafe_allow_html=True)
     st.dataframe(
         df[['track_id', 'vehicle_type', 'license_plate', 'violations', 'max_speed', 'last_seen']],
-        use_container_width=True,
+        width='stretch',
         column_config={
             "track_id": "Track ID",
             "last_seen": "Detected At",
@@ -211,10 +224,16 @@ with tab_vault:
             with grid[i % 4]:
                 img = row['image_path']
                 caption = f"ID:{row['track_id']} | {row['license_plate'] or 'SCANNING...'}"
-                if img and (img.startswith("http") or os.path.exists(img)):
-                    st.image(img, caption=caption, use_container_width=True)
+
+                # Robust type check to handle NaN/Float/None
+                if isinstance(img, str) and img.strip():
+                    if img.startswith("http") or os.path.exists(img):
+                        st.image(img, caption=caption, use_container_width=True)
+                    else:
+                        st.warning(f"ID {row['track_id']} Syncing...")
                 else:
-                    st.warning(f"ID {row['track_id']} Syncing...")
+                    st.info(f"ID {row['track_id']} Scanning...")
+
     else:
         st.info("Evidence vault is empty.")
     st.markdown('</div>', unsafe_allow_html=True)
